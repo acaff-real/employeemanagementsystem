@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>An imaginative title</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/static/app.js" defer></script> 
+</head>
+<body class="bg-gray-100 p-4 md:p-8 font-sans">
+    <div class="max-w-4xl mx-auto space-y-6 md:space-y-8">
+        
+        <div class="bg-white p-4 md:p-6 rounded-lg border-2 border-gray-300 flex justify-between items-center">
+            <h1 class="text-xl md:text-2xl font-bold text-gray-900">Task tracking system</h1>
+            <button id="logout-btn" onclick="logout()" class="hidden border border-red-500 text-red-600 px-4 py-2 rounded text-sm hover:bg-red-50">Logout</button>
+        </div>
+
+        <div id="login-section" class="bg-white p-6 rounded-lg border-2 border-gray-300 max-w-md mx-auto">
+            <h2 class="text-xl font-semibold mb-4 text-center">Please Log In</h2>
+            <div class="space-y-4">
+                <input type="text" id="login-username" placeholder="Username" class="border-2 border-gray-200 p-2 rounded w-full focus:border-gray-800 outline-none">
+                <input type="password" id="login-password" placeholder="Password" class="border-2 border-gray-200 p-2 rounded w-full focus:border-gray-800 outline-none">
+                <button onclick="login()" class="bg-gray-800 text-white px-6 py-2 rounded w-full hover:bg-gray-900">Login</button>
+            </div>
+        </div>
+
+        <div id="app-section" class="hidden space-y-6 md:space-y-8">
+            
+            <div id="add-employee-form" class="bg-white p-4 md:p-6 rounded-lg border-2 border-gray-300 hidden"> 
+                <h2 class="text-xl font-semibold mb-4 text-gray-900">Add New Employee</h2>
+                
+                <div class="flex flex-col space-y-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                        <input type="text" id="emp-name" placeholder="Name" class="border-2 border-gray-200 p-2 rounded w-full focus:border-gray-800 outline-none min-w-0">
+                        <input type="text" id="emp-role" placeholder="Role" class="border-2 border-gray-200 p-2 rounded w-full focus:border-gray-800 outline-none min-w-0">
+                        <input type="text" id="emp-username" placeholder="Username" class="border-2 border-gray-200 p-2 rounded w-full focus:border-gray-800 outline-none min-w-0">
+                        <input type="password" id="emp-password" placeholder="Password" class="border-2 border-gray-200 p-2 rounded w-full focus:border-gray-800 outline-none min-w-0">
+                    </div>
+                    
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-2">
+                        <label class="flex items-center space-x-2 text-sm text-gray-700 cursor-pointer">
+                            <input type="checkbox" id="emp-is-admin" class="rounded border-gray-300 text-gray-800 focus:ring-gray-800">
+                            <span class="font-bold text-red-600">Grant Sudo Privileges</span>
+                        </label>
+                        <button onclick="addEmployee()" class="bg-gray-800 text-white px-6 py-2 rounded hover:bg-gray-900 w-full sm:w-auto">Add Employee</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="dashboard" class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6"></div>
+            
+        </div>
+    </div>
+</body>
+</html>
