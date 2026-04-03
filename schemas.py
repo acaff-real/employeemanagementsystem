@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from typing import List, Optional
 
-# --- TASK SCHEMAS ---
+
 class TaskBase(BaseModel):
     description: str
 
@@ -16,14 +16,14 @@ class Task(TaskBase):
     id: int
     employee_id: int
     status: str
-    comments: List[Comment] = [] # <-- This is the crucial line!
+    comments: List[Comment] = [] 
 
     class Config:
         from_attributes = True
 
 
 
-# --- EMPLOYEE SCHEMAS ---
+
 class EmployeeBase(BaseModel):
     name: str
     role: str
@@ -37,7 +37,7 @@ class EmployeeCreate(EmployeeBase):
 
 class Employee(EmployeeBase):
     id: int
-    username: str # It is okay to return the username to the frontend!
+    username: str 
     tasks: List[Task] = []
 
     class Config:

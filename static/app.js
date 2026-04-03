@@ -88,7 +88,7 @@ async function loadDashboard() {
             </div>
         ` : '';
 
-        // Added border-2 border-gray-300 here
+        
         dashboard.innerHTML += `
             <div class="bg-white p-6 rounded-lg border-2 border-gray-300 relative">
                 <div class="absolute top-4 right-4">${promoteBtn} ${deleteBtn}</div>
@@ -108,7 +108,7 @@ async function loadDashboard() {
     });
 }
 
-// --- API ACTIONS & AUTH (Unchanged Logic) ---
+
 
 async function login() {
     const usernameInput = document.getElementById("login-username").value;
