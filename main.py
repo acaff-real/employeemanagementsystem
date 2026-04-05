@@ -10,7 +10,14 @@ from jose import JWTError, jwt
 
 
 app = FastAPI(title="Employee Management System")
-
+app.add_middleware(
+    CORSMiddleware,
+    # Replace the URL below with your ACTUAL GitHub Pages URL once you have it
+    allow_origins=["https://YOUR_GITHUB_USERNAME.github.io", "http://127.0.0.1:8000"], 
+    allow_credentials=True,
+    allow_methods=["*"], # Allows all methods (GET, POST, PUT, DELETE)
+    allow_headers=["*"], # Allows all headers (like your Authorization token)
+)
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
