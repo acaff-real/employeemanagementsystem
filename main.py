@@ -7,13 +7,13 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from passlib.context import CryptContext
 from datetime import datetime, timedelta, timezone
 from jose import JWTError, jwt
-
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="Employee Management System")
 app.add_middleware(
     CORSMiddleware,
     # Replace the URL below with your ACTUAL GitHub Pages URL once you have it
-    allow_origins=["https://YOUR_GITHUB_USERNAME.github.io", "http://127.0.0.1:8000"], 
+    allow_origins=["acaff-real.github.io", "http://127.0.0.1:8000"], 
     allow_credentials=True,
     allow_methods=["*"], # Allows all methods (GET, POST, PUT, DELETE)
     allow_headers=["*"], # Allows all headers (like your Authorization token)
