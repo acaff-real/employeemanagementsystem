@@ -10,44 +10,38 @@ from jose import JWTError, jwt
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="Employee Management System")
+
 app.add_middleware(
     CORSMiddleware,
-    # Replace the URL below with your ACTUAL GitHub Pages URL once you have it
-    allow_origins=["acaff-real.github.io", "http://127.0.0.1:8000"], 
+    allow_origins=["*"], 
     allow_credentials=True,
-    allow_methods=["*"], # Allows all methods (GET, POST, PUT, DELETE)
-    allow_headers=["*"], # Allows all headers (like your Authorization token)
+    allow_methods=["*"], 
+    allow_headers=["*"], 
 )
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
-
 SECRET_KEY = "my-super-secret-development-key" 
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-def get_password_hash(password):
-    return pwd_context.hash(password)
+# --- THE FIX: Truncating passwords to 72 characters for bcrypt ---
+def get_password_hash(password: str):
+    truncated_password = password[:72]
+    return pwd_context.hash(truncated_password)
 
-def verify_password(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
+def verify_password(plain_password: str, hashed_password: str):
+    truncated_password = plain_password[:72]
+    return pwd_context.verify(truncated_password, hashed_password)
+# ----------------------------------------------------------------
 
 def create_access_token(data: dict):
     to_encode = data.copy()
-    
     expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire})
-    
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
-
-def get_password_hash(password):
-    return pwd_context.hash(password)
-
-def verify_password(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
-
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
@@ -57,6 +51,7 @@ def get_db():
         yield db
     finally:
         db.close()
+
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     credentials_exception = HTTPException(
         status_code=401,
@@ -64,7 +59,6 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
-        
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username: str = payload.get("sub")
         if username is None:
@@ -72,20 +66,16 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     except JWTError:
         raise credentials_exception
         
-    
     user = db.query(database.Employee).filter(database.Employee.username == username).first()
     if user is None:
         raise credentials_exception
         
-    
     return user
 
 def get_admin_user(current_user: database.Employee = Depends(get_current_user)):
     if not current_user.is_admin:
         raise HTTPException(status_code=403, detail="Sudo privileges required.")
     return current_user
-
-
 
 @app.post("/employees/", response_model=schemas.Employee)
 def create_employee(
@@ -107,7 +97,6 @@ def create_employee(
     db.refresh(db_employee)
     return db_employee
 
-
 @app.delete("/employees/{employee_id}")
 def delete_employee(
     employee_id: int, 
@@ -124,7 +113,6 @@ def delete_employee(
 
 @app.get("/employees/", response_model=list[schemas.Employee])
 def get_dashboard(db: Session = Depends(get_db)):
-    
     return db.query(database.Employee).all()
 
 @app.post("/tasks/", response_model=schemas.Task)
@@ -133,12 +121,9 @@ def create_task(
     db: Session = Depends(get_db),
     current_user: database.Employee = Depends(get_current_user) 
 ):
-    
-    
     if not current_user.is_admin and current_user.id != task.employee_id:
         raise HTTPException(status_code=403, detail="Not authorized to assign tasks to other employees.")
 
-    
     db_employee = db.query(database.Employee).filter(database.Employee.id == task.employee_id).first()
     if not db_employee:
         raise HTTPException(status_code=404, detail="Employee not found")
@@ -154,7 +139,6 @@ def update_task(task_id: int, task_update: schemas.TaskUpdate, db: Session = Dep
     db_task = db.query(database.Task).filter(database.Task.id == task_id).first()
     if not db_task:
         raise HTTPException(status_code=404, detail="Task not found")
-    
     
     if task_update.description is not None:
         db_task.description = task_update.description
@@ -176,21 +160,15 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
     if not user or not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(status_code=400, detail="Incorrect username or password")
     
-    
     access_token = create_access_token(data={"sub": user.username})
     return {"access_token": access_token, "token_type": "bearer"}
 
-
 @app.get("/users/me", response_model=schemas.Employee)
 def read_users_me(current_user: database.Employee = Depends(get_current_user)):
-    
-    
     return current_user
-
 
 @app.post("/setup", response_model=schemas.Employee)
 def create_first_admin(employee: schemas.EmployeeCreate, db: Session = Depends(get_db)):
-    
     if db.query(database.Employee).count() > 0:
         raise HTTPException(status_code=403, detail="Setup already complete. Cannot use this route.")
         

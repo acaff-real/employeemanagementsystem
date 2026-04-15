@@ -1,4 +1,4 @@
-const API_URL = "https://employeemanagementsystembackend-9i49.onrender.com";
+const API_URL = "http://127.0.0.1:8000";
 window.onload = checkAuth;
 let currentUser = null; 
 
